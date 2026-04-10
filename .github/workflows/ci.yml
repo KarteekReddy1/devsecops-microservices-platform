@@ -1,0 +1,25 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  user-service:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      service-path: services/user-service
+      runtime: node
+
+  product-service:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      service-path: services/product-service
+      runtime: python
+
+  order-service:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      service-path: services/order-service
+      runtime: node

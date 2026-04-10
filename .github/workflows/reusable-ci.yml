@@ -1,0 +1,57 @@
+name: Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      service-path:
+        required: true
+        type: string
+      runtime:
+        required: true
+        type: string
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.service-path }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Node.js setup
+      - name: Setup Node
+        if: ${{ inputs.runtime == 'node' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # Python setup
+      - name: Setup Python
+        if: ${{ inputs.runtime == 'python' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      # Install dependencies (Node)
+      - name: Install dependencies (Node)
+        if: ${{ inputs.runtime == 'node' }}
+        run: npm install
+
+      # Install dependencies (Python)
+      - name: Install dependencies (Python)
+        if: ${{ inputs.runtime == 'python' }}
+        run: pip install -r requirements.txt
+
+      # Run tests (Node)
+      - name: Run tests (Node)
+        if: ${{ inputs.runtime == 'node' }}
+        run: npm test
+
+      # Run tests (Python)
+      - name: Run tests (Python)
+        if: ${{ inputs.runtime == 'python' }}
+        run: pytest
