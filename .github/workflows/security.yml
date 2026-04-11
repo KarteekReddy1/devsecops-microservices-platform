@@ -62,7 +62,9 @@ jobs:
 
     # 🔧 STEP 1: Set Image Tag
       - name: Set image tag
-        run: echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha }}" | cut -c1-7 >> $GITHUB_ENV
+        run: |
+          TAG=$(echo "${{ github.event.workflow_run.head_sha }}" | cut -c1-7)
+          echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
     # 🔐 STEP 2: AWS Login (ADD HERE)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
