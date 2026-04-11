@@ -1,0 +1,69 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  # 🔐 SAST - CodeQL
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, python
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Run CodeQL
+        uses: github/codeql-action/analyze@v3
+
+  # 📦 Dependency Scan
+  dependency-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node audit
+        run: |
+          cd services/user-service && npm audit || true
+          cd ../order-service && npm audit || true
+
+      - name: Python audit
+        run: |
+          pip install pip-audit
+          cd services/product-service && pip-audit || true
+
+  # 🐳 Container Scan
+  container-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          severity: HIGH,CRITICAL
+
+  # 🏗 Terraform Scan
+  terraform-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Run Checkov
+        run: checkov -d ./terraform || true
