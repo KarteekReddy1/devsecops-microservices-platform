@@ -28,13 +28,11 @@ jobs:
 
       - name: Setup Helm
         uses: azure/setup-helm@v4
-
+         
       - name: Set kubeconfig
         run: |
-      - name: Set kubeconfig
-        run: |
-          mkdir -p /.kube
-          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/configmkdir -p /.kube
 
       - name: Deploy with Helm
         run: |
