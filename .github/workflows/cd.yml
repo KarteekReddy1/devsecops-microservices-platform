@@ -32,7 +32,7 @@ jobs:
       - name: Set kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/configmkdir -p /.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config mkdir -p /.kube
 
       - name: Deploy with Helm
         run: |
