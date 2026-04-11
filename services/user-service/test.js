@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send("User Service Running");
+  res.send("User Service v2");
 });
 
 test("GET / should return message", async () => {
