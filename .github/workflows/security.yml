@@ -54,12 +54,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Run Trivy scan
+    # 🔧 STEP 1: Set Image Tag
+      - name: Set image tag
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+    # 🔐 STEP 2: AWS Login (ADD HERE)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+          docker login --username AWS --password-stdin \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+# 🔍 STEP 3: TRIVY SCANS (ADD HERE)
+
+      - name: Scan User Service Image
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: fs
+          image-ref: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/user-service:${{ env.IMAGE_TAG }}
+          severity: HIGH,CRITICAL
+      - name: Scan Product Service Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/product-service:${{ env.IMAGE_TAG }}
+          severity: HIGH,CRITICAL
+
+      - name: Scan Order Service Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/order-service:${{ env.IMAGE_TAG }}
           severity: HIGH,CRITICAL
 
   # 🏗 Terraform Scan
