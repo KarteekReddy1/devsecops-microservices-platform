@@ -9,5 +9,5 @@ app.get("/", (req, res) => {
 
 test("GET / should return message", async () => {
   const res = await request(app).get("/");
-  expect(res.text).toBe("User Service Running");
+  expect(res.text).toBe("User Service v2");
 });
