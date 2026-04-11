@@ -4,6 +4,13 @@ on:
   push:
     branches: [ master ]
 
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+ 
 jobs:
 
   # 🔐 SAST - CodeQL
