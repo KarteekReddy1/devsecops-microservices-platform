@@ -172,3 +172,30 @@ productService:
 orderService:
   image: 927854233463.dkr.ecr.us-east-1.amazonaws.com/order-service:latest
   port: 3002
+
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+
+  hosts:
+    - host: ""
+      paths:
+        - path: /user
+          service:
+            name: user-service
+            port: 80
+
+        - path: /product
+          service:
+            name: product-service
+            port: 80
+
+        - path: /order
+          service:
+            name: order-service
+            port: 80
